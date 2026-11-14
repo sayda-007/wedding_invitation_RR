@@ -1,7 +1,9 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import './App.css'
 import { invitationData } from './data/invitationData'
+import './royal-ornaments.css'
 
 type CountdownState = {
   days: number
@@ -23,36 +25,78 @@ const sectionIds = [
 
 type SectionId = (typeof sectionIds)[number]
 
-const formatValue = (value: number) => (value < 10 ? `0${value}` : `${value}`)
+const formatValue = (value: number) => String(value).padStart(2, '0')
 
 const sparkIds = Array.from({ length: 18 }, (_, index) => index)
 
+const revealTransition = {
+  duration: 0.8,
+  ease: [0.22, 1, 0.36, 1] as const,
+}
+
+const revealViewport = {
+  once: true,
+  amount: 0.25,
+}
+
+const revealUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0 },
+}
+
+const revealLeft = {
+  hidden: { opacity: 0, x: -24 },
+  visible: { opacity: 1, x: 0 },
+}
+
+const revealRight = {
+  hidden: { opacity: 0, x: 24 },
+  visible: { opacity: 1, x: 0 },
+}
+
+const revealScale = {
+  hidden: { opacity: 0, scale: 0.92 },
+  visible: { opacity: 1, scale: 1 },
+}
+
 function App() {
+  const prefersReducedMotion = useReducedMotion()
+
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [isOpening, setIsOpening] = useState(false)
   const [activeSection, setActiveSection] = useState<SectionId>('cover')
+
   const [countdown, setCountdown] = useState<CountdownState>({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   })
+
   const [isEventReached, setIsEventReached] = useState(false)
+
   const openLockRef = useRef(false)
   const openTimerRef = useRef<number | null>(null)
 
-  const openEnvelope = () => {
-    if (openLockRef.current || isEnvelopeOpen || isOpening) {
-      return
-    }
+  // Open the invitation with one tap only.
+  const openEnvelope = useCallback(() => {
+    if (openLockRef.current) return
 
     openLockRef.current = true
     setIsOpening(true)
+
+    if (prefersReducedMotion) {
+      setIsEnvelopeOpen(true)
+      setIsOpening(false)
+      return
+    }
+
     openTimerRef.current = window.setTimeout(() => {
       setIsEnvelopeOpen(true)
       setIsOpening(false)
-    }, 1100)
-  }
+      openTimerRef.current = null
+    }, 1150)
+  }, [prefersReducedMotion])
 
   useEffect(() => {
     return () => {
@@ -62,54 +106,64 @@ function App() {
     }
   }, [])
 
+  // Countdown uses the explicit event timezone/offset in invitationData.
   useEffect(() => {
     const updateCountdown = () => {
       const targetDate = new Date(invitationData.eventDateTime)
-      const diffInMs = targetDate.getTime() - Date.now()
+      const difference = targetDate.getTime() - Date.now()
 
-      if (diffInMs <= 0) {
+      if (!Number.isFinite(targetDate.getTime()) || difference <= 0) {
         setIsEventReached(true)
-        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+        setCountdown({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        })
         return
       }
 
-      const totalSeconds = Math.floor(diffInMs / 1000)
-      const days = Math.floor(totalSeconds / 86400)
-      const hours = Math.floor((totalSeconds % 86400) / 3600)
-      const minutes = Math.floor((totalSeconds % 3600) / 60)
-      const seconds = totalSeconds % 60
+      const totalSeconds = Math.floor(difference / 1000)
 
       setIsEventReached(false)
-      setCountdown({ days, hours, minutes, seconds })
+      setCountdown({
+        days: Math.floor(totalSeconds / 86400),
+        hours: Math.floor((totalSeconds % 86400) / 3600),
+        minutes: Math.floor((totalSeconds % 3600) / 60),
+        seconds: totalSeconds % 60,
+      })
     }
 
     updateCountdown()
+
     const timer = window.setInterval(updateCountdown, 1000)
 
     return () => window.clearInterval(timer)
   }, [])
 
+  // Track the currently visible invitation section.
   useEffect(() => {
-    if (!isEnvelopeOpen) {
-      return
-    }
+    if (!isEnvelopeOpen) return
 
     const sections = sectionIds
       .map((id) => document.getElementById(id))
-      .filter(Boolean) as HTMLElement[]
+      .filter((section): section is HTMLElement => section !== null)
 
-    if (!sections.length) {
-      return
-    }
+    if (!sections.length) return
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const visibleEntry = entries
+        const visibleEntries = entries
           .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+          .sort(
+            (first, second) =>
+              second.intersectionRatio - first.intersectionRatio,
+          )
 
-        if (visibleEntry?.target?.id) {
-          setActiveSection(visibleEntry.target.id as SectionId)
+        const visibleSection = visibleEntries[0]
+
+        if (visibleSection?.target.id) {
+          setActiveSection(visibleSection.target.id as SectionId)
         }
       },
       {
@@ -125,27 +179,33 @@ function App() {
   }, [isEnvelopeOpen])
 
   const currentIndex = sectionIds.indexOf(activeSection)
-  const isLastSection = currentIndex >= sectionIds.length - 1
+  const isLastSection = currentIndex === sectionIds.length - 1
 
-  const scrollToSection = (id: SectionId) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+  const scrollToSection = useCallback((id: SectionId) => {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'start',
+    })
+  }, [prefersReducedMotion])
 
-  const moveToNextSection = () => {
+  const moveToNextSection = useCallback(() => {
     if (isLastSection) {
       scrollToSection('cover')
       return
     }
 
     scrollToSection(sectionIds[currentIndex + 1])
-  }
+  }, [currentIndex, isLastSection, scrollToSection])
 
   const venueName = invitationData.venue.name
   const venueAddress = invitationData.venue.address
   const venueBengaliName = invitationData.venue.bengaliName
 
+  const motionDuration = prefersReducedMotion ? 0.01 : undefined
+
   return (
     <div className={`app-shell ${isEnvelopeOpen ? 'is-opened' : ''}`}>
+      {/* OPENING GATEFOLD */}
       <AnimatePresence mode="wait">
         {!isEnvelopeOpen && (
           <motion.div
@@ -153,40 +213,105 @@ function App() {
             className="envelope-stage"
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.6 } }}
+            exit={{
+              opacity: 0,
+              transition: {
+                duration: prefersReducedMotion ? 0.01 : 0.6,
+              },
+            }}
           >
             <div className="envelope-wrapper">
               <motion.div
                 className={`envelope ${isOpening ? 'is-opening' : ''}`}
                 initial={{ scale: 0.98, opacity: 0.9 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
+                transition={{
+                  duration: prefersReducedMotion ? 0.01 : 0.5,
+                  ease: 'easeOut',
+                }}
               >
                 <div className="envelope-texture" aria-hidden="true" />
-                <div className="envelope-ornament envelope-ornament-right" aria-hidden="true" />
+
+                <div
+                  className="envelope-ornament envelope-ornament-right"
+                  aria-hidden="true"
+                />
+
                 <div className="envelope-shadow" aria-hidden="true" />
 
+                {/* LEFT GATEFOLD PANEL */}
                 <motion.div
                   className="envelope-panel left"
                   aria-hidden="true"
-                  animate={isOpening ? { x: '-54%', rotateY: -72, rotateZ: -1.2 } : { x: 0, rotateY: 0, rotateZ: 0 }}
-                  transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
+                  animate={
+                    isOpening
+                      ? {
+                          x: '-54%',
+                          rotateY: -72,
+                          rotateZ: -1.2,
+                        }
+                      : {
+                          x: 0,
+                          rotateY: 0,
+                          rotateZ: 0,
+                        }
+                  }
+                  transition={{
+                    duration: prefersReducedMotion ? 0.01 : 1.15,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
                 />
+
+                {/* RIGHT GATEFOLD PANEL */}
                 <motion.div
                   className="envelope-panel right"
                   aria-hidden="true"
-                  animate={isOpening ? { x: '54%', rotateY: 72, rotateZ: 1.2 } : { x: 0, rotateY: 0, rotateZ: 0 }}
-                  transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
+                  animate={
+                    isOpening
+                      ? {
+                          x: '54%',
+                          rotateY: 72,
+                          rotateZ: 1.2,
+                        }
+                      : {
+                          x: 0,
+                          rotateY: 0,
+                          rotateZ: 0,
+                        }
+                  }
+                  transition={{
+                    duration: prefersReducedMotion ? 0.01 : 1.15,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
                 />
 
+                {/* INNER INVITATION */}
                 <div className="envelope-inner" aria-hidden="true">
                   <div className="inner-frame">
                     <span className="inner-orbit" />
-                    <span className="inner-monogram">{invitationData.monogram}</span>
+                    <span className="inner-monogram">
+                      {invitationData.monogram}
+                    </span>
                   </div>
                 </div>
 
-                <div className="light-burst" aria-hidden="true">
+                {/* CENTER LIGHT EFFECT */}
+                <motion.div
+                  className="light-burst"
+                  aria-hidden="true"
+                  animate={
+                    isOpening && !prefersReducedMotion
+                      ? {
+                          opacity: [0, 1, 0.85],
+                          scale: [0.65, 1.5, 2.2],
+                        }
+                      : { opacity: 0, scale: 0.65 }
+                  }
+                  transition={{
+                    duration: 1.1,
+                    ease: 'easeOut',
+                  }}
+                >
                   <span className="light-ray ray-1" />
                   <span className="light-ray ray-2" />
                   <span className="light-ray ray-3" />
@@ -194,24 +319,47 @@ function App() {
                   <span className="light-ray ray-5" />
                   <span className="light-ray ray-6" />
                   <span className="light-core" />
-                </div>
+                </motion.div>
 
+                {/* SPARKLES */}
                 <div className="spark-field" aria-hidden="true">
                   {sparkIds.map((sparkId) => (
-                    <span key={sparkId} className={`spark spark-${sparkId + 1}`} />
+                    <span
+                      key={sparkId}
+                      className={`spark spark-${sparkId + 1}`}
+                    />
                   ))}
                 </div>
 
-                <div className="seal-cluster" aria-hidden="false">
+                {/* WAX SEAL AND OPENING LABEL */}
+                <div className="seal-cluster">
                   <motion.button
                     type="button"
                     className={`wax-seal ${isOpening ? 'seal-released' : ''}`}
                     aria-label="Open the invitation"
+                    aria-disabled={isOpening}
+                    disabled={isOpening}
                     onClick={openEnvelope}
-                    transition={{ type: 'spring', stiffness: 320, damping: 20 }}
+                    whileHover={
+                      !isOpening && !prefersReducedMotion
+                        ? { scale: 1.045 }
+                        : undefined
+                    }
+                    whileTap={
+                      !isOpening && !prefersReducedMotion
+                        ? { scale: 0.96 }
+                        : undefined
+                    }
+                    transition={{
+                      type: 'spring',
+                      stiffness: 320,
+                      damping: 20,
+                    }}
                   >
                     <span className="seal-rim" />
-                    <span className="seal-rr">{invitationData.monogram}</span>
+                    <span className="seal-rr">
+                      {invitationData.monogram}
+                    </span>
                     <span className="seal-glint" aria-hidden="true" />
                   </motion.button>
 
@@ -219,7 +367,10 @@ function App() {
                     className="click-here"
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4, duration: 0.6 }}
+                    transition={{
+                      delay: prefersReducedMotion ? 0 : 0.4,
+                      duration: motionDuration ?? 0.6,
+                    }}
                   >
                     click here
                   </motion.div>
@@ -230,15 +381,25 @@ function App() {
         )}
       </AnimatePresence>
 
+      {/* MAIN INVITATION */}
       <AnimatePresence>
         {isEnvelopeOpen && (
           <motion.main
             key="invitation-page"
             className="invitation-page"
-            initial={{ opacity: 0, y: 28 }}
+            initial={{
+              opacity: 0,
+              y: prefersReducedMotion ? 0 : 28,
+            }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 18 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            exit={{
+              opacity: 0,
+              y: prefersReducedMotion ? 0 : 18,
+            }}
+            transition={{
+              duration: prefersReducedMotion ? 0.01 : 0.8,
+              ease: 'easeOut',
+            }}
           >
             <div className="page-sparkles" aria-hidden="true">
               <span className="sparkle sparkle-1" />
@@ -249,59 +410,167 @@ function App() {
               <span className="sparkle sparkle-6" />
             </div>
 
-            <section id="cover" className="invitation-section cover-section">
+            {/* COVER */}
+            <section
+              id="cover"
+              className="invitation-section cover-section"
+            >
               <div className="section-frame cover-frame">
                 <div className="ornament ornament-top" aria-hidden="true" />
 
-                <motion.p className="bismillah" dir="rtl" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                <motion.p
+                  className="bismillah"
+                  dir="rtl"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{ ...revealTransition, duration: motionDuration ?? 0.8 }}
+                >
                   بِسْمِ ٱللّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
                 </motion.p>
-                <motion.p className="english-translation" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7, delay: 0.1 }}>
+
+                <motion.p
+                  className="english-translation"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.1,
+                    duration: motionDuration ?? 0.8,
+                  }}
+                >
                   In the name of Allah, the Most Gracious, the Most Merciful.
                 </motion.p>
 
-                <motion.div className="welcome-header" initial={{ opacity: 0, y: 18, scale: 0.96 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.12 }}>
+                <motion.div
+                  className="welcome-header"
+                  variants={revealScale}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.15,
+                    duration: motionDuration ?? 0.8,
+                  }}
+                >
                   <div className="mini-knot">RR</div>
                   <span className="occasion-tag">WALIMA</span>
                 </motion.div>
 
-                <motion.p className="bangla-invite" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7, delay: 0.15 }}>
-                  আপনাকে সাদর আমন্ত্রণ
-                </motion.p>
-                <motion.p className="welcome-message" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.2 }}>
-                  With heartfelt joy and gratitude, we invite you to witness our Walima
-                  celebration and share in the blessings of this new chapter.
+                <motion.p
+                  className="welcome-message"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.25,
+                    duration: motionDuration ?? 0.8,
+                  }}
+                >
+                  With heartfelt joy and gratitude, we invite you to witness
+                  our Walima celebration and share in the blessings of this
+                  new chapter.
                 </motion.p>
 
                 <div className="ornament ornament-bottom" aria-hidden="true" />
               </div>
             </section>
 
-            <section id="couple" className="invitation-section couple-section">
+            {/* THE COUPLE */}
+            <section
+              id="couple"
+              className="invitation-section couple-section"
+            >
               <div className="section-frame couple-frame">
-                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                <motion.div
+                  className="section-heading"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={revealTransition}
+                >
                   The Couple
                 </motion.div>
 
                 <div className="names-wrapper">
                   <div className="name-block groom-name">
-                    <motion.span className="name-label" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, delay: 0.08 }}>
+                    <motion.span
+                      className="name-label"
+                      variants={revealLeft}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={revealViewport}
+                      transition={{
+                        ...revealTransition,
+                        delay: prefersReducedMotion ? 0 : 0.08,
+                      }}
+                    >
                       Groom
                     </motion.span>
-                    <motion.h2 className="animated-name" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7 }}>
+
+                    <motion.h2
+                      className="animated-name"
+                      variants={revealLeft}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={revealViewport}
+                      transition={{
+                        ...revealTransition,
+                        delay: prefersReducedMotion ? 0 : 0.16,
+                      }}
+                    >
                       <span>{invitationData.groom}</span>
                     </motion.h2>
                   </div>
 
-                  <motion.div className="monogram-mark" aria-label="RR monogram" initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.8, delay: 0.15 }}>
+                  <motion.div
+                    className="monogram-mark"
+                    aria-label="RR monogram"
+                    variants={revealScale}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={revealViewport}
+                    transition={{
+                      ...revealTransition,
+                      delay: prefersReducedMotion ? 0 : 0.2,
+                    }}
+                  >
                     {invitationData.monogram}
                   </motion.div>
 
                   <div className="name-block bride-name">
-                    <motion.span className="name-label" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, delay: 0.12 }}>
+                    <motion.span
+                      className="name-label"
+                      variants={revealRight}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={revealViewport}
+                      transition={{
+                        ...revealTransition,
+                        delay: prefersReducedMotion ? 0 : 0.08,
+                      }}
+                    >
                       Bride
                     </motion.span>
-                    <motion.h2 className="animated-name" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, delay: 0.1 }}>
+
+                    <motion.h2
+                      className="animated-name"
+                      variants={revealRight}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={revealViewport}
+                      transition={{
+                        ...revealTransition,
+                        delay: prefersReducedMotion ? 0 : 0.16,
+                      }}
+                    >
                       <span>{invitationData.bride}</span>
                     </motion.h2>
                   </div>
@@ -309,30 +578,84 @@ function App() {
               </div>
             </section>
 
-            <section id="event" className="invitation-section event-section">
+            {/* EVENT */}
+            <section
+              id="event"
+              className="invitation-section event-section"
+            >
               <div className="section-frame event-box">
-                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                <motion.div
+                  className="section-heading"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={revealTransition}
+                >
                   The Walima Celebration
                 </motion.div>
+
                 <div className="event-details">
-                  <motion.p className="event-date" initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.08 }}>
+                  <motion.p
+                    className="event-date"
+                    variants={revealUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={revealViewport}
+                    transition={{
+                      ...revealTransition,
+                      delay: prefersReducedMotion ? 0 : 0.1,
+                    }}
+                  >
                     16 JANUARY 2027
                   </motion.p>
-                  <motion.p className="event-day-banner" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.14 }}>
+
+                  <motion.p
+                    className="event-day-banner"
+                    variants={revealUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={revealViewport}
+                    transition={{
+                      ...revealTransition,
+                      delay: prefersReducedMotion ? 0 : 0.2,
+                    }}
+                  >
                     A gathering of family, love, and gratitude.
                   </motion.p>
                 </div>
               </div>
             </section>
 
-            <section id="schedule" className="invitation-section schedule-section">
+            {/* PROGRAMME */}
+            <section
+              id="schedule"
+              className="invitation-section schedule-section"
+            >
               <div className="section-frame">
-                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                <motion.div
+                  className="section-heading"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={revealTransition}
+                >
                   Programme
                 </motion.div>
 
                 <div className="timeline">
-                  <motion.div className="timeline-item" initial={{ opacity: 0, y: 18, scale: 0.96 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.08 }}>
+                  <motion.div
+                    className="timeline-item"
+                    variants={revealScale}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={revealViewport}
+                    transition={{
+                      ...revealTransition,
+                      delay: prefersReducedMotion ? 0 : 0.12,
+                    }}
+                  >
                     <span className="time">1:00 PM</span>
                     <span className="dot" aria-hidden="true" />
                     <span className="label">Feast Begins</span>
@@ -341,18 +664,41 @@ function App() {
               </div>
             </section>
 
-            <section id="countdown" className="invitation-section countdown-section">
+            {/* COUNTDOWN */}
+            <section
+              id="countdown"
+              className="invitation-section countdown-section"
+            >
               <div className="section-frame countdown-box">
-                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                <motion.div
+                  className="section-heading"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={revealTransition}
+                >
                   Countdown
                 </motion.div>
 
                 {isEventReached ? (
-                  <motion.p className="event-day-banner" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.08 }}>
-                    The blessed day has arrived. We are grateful for your presence.
+                  <motion.p
+                    className="event-day-banner"
+                    variants={revealUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={revealViewport}
+                    transition={revealTransition}
+                  >
+                    The blessed day has arrived. We are grateful for your
+                    presence.
                   </motion.p>
                 ) : (
-                  <div className="countdown-grid" aria-label="Countdown to the Walima celebration">
+                  <div
+                    className="countdown-grid"
+                    aria-label="Countdown to the Walima celebration"
+                    aria-live="off"
+                  >
                     {[
                       { value: countdown.days, label: 'Days' },
                       { value: countdown.hours, label: 'Hours' },
@@ -362,12 +708,18 @@ function App() {
                       <motion.div
                         key={item.label}
                         className="count-box"
-                        initial={{ opacity: 0, y: 18, scale: 0.94 }}
-                        whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                        viewport={{ once: true, amount: 0.4 }}
-                        transition={{ duration: 0.7, delay: index * 0.08 }}
+                        variants={revealScale}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={revealViewport}
+                        transition={{
+                          ...revealTransition,
+                          delay: prefersReducedMotion ? 0 : index * 0.09,
+                        }}
                       >
-                        <span className="value">{formatValue(item.value)}</span>
+                        <span className="value">
+                          {formatValue(item.value)}
+                        </span>
                         <span className="unit">{item.label}</span>
                       </motion.div>
                     ))}
@@ -376,27 +728,65 @@ function App() {
               </div>
             </section>
 
-            <section id="venue" className="invitation-section venue-section">
+            {/* VENUE */}
+            <section
+              id="venue"
+              className="invitation-section venue-section"
+            >
               <div className="section-frame venue-box">
-                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
-                  Venue & Location
+                <motion.div
+                  className="section-heading"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={revealTransition}
+                >
+                  Venue &amp; Location
                 </motion.div>
 
                 <div className="venue-layout">
-                  <motion.div className="venue-image-frame" initial={{ opacity: 0, y: 20, scale: 0.97 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.8, delay: 0.08 }}>
+                  <motion.div
+                    className="venue-image-frame"
+                    variants={revealLeft}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={revealViewport}
+                    transition={{
+                      ...revealTransition,
+                      delay: prefersReducedMotion ? 0 : 0.08,
+                    }}
+                  >
                     <img
                       src={invitationData.venue.image}
                       alt="Royal venue entrance gate photographed for the Walima invitation"
+                      loading="lazy"
                     />
                   </motion.div>
 
-                  <motion.div className="venue-copy" initial={{ opacity: 0, x: 18 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, delay: 0.12 }}>
+                  <motion.div
+                    className="venue-copy"
+                    variants={revealRight}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={revealViewport}
+                    transition={{
+                      ...revealTransition,
+                      delay: prefersReducedMotion ? 0 : 0.14,
+                    }}
+                  >
                     <div className="location-icon" aria-hidden="true">
                       ⌖
                     </div>
+
                     <h3 className="venue-name">{venueName}</h3>
+
                     <p className="venue-address">{venueAddress}</p>
-                    <p className="venue-bengali-name">({venueBengaliName})</p>
+
+                    <p className="venue-bengali-name">
+                      ({venueBengaliName})
+                    </p>
+
                     <a
                       href={invitationData.venue.mapUrl}
                       target="_blank"
@@ -410,9 +800,20 @@ function App() {
               </div>
             </section>
 
-            <section id="contacts" className="invitation-section contacts-section">
+            {/* CONTACTS */}
+            <section
+              id="contacts"
+              className="invitation-section contacts-section"
+            >
               <div className="section-frame">
-                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                <motion.div
+                  className="section-heading"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={revealTransition}
+                >
                   Contact
                 </motion.div>
 
@@ -422,14 +823,19 @@ function App() {
                       key={person.phone}
                       href={`tel:${person.phone}`}
                       className="contact-item"
-                      initial={{ opacity: 0, x: 18 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, amount: 0.4 }}
-                      transition={{ duration: 0.7, delay: index * 0.08 }}
+                      variants={revealUp}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={revealViewport}
+                      transition={{
+                        ...revealTransition,
+                        delay: prefersReducedMotion ? 0 : index * 0.12,
+                      }}
                     >
                       <span className="phone-icon" aria-hidden="true">
                         ☎
                       </span>
+
                       <div>
                         <strong>{person.name}</strong>
                         <span>{person.phone}</span>
@@ -440,31 +846,119 @@ function App() {
               </div>
             </section>
 
-            <section id="closing" className="invitation-section closing-section">
+            {/* CLOSING DUA */}
+            <section
+              id="closing"
+              className="invitation-section closing-section"
+            >
               <div className="section-frame closing-box">
-                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                <motion.div
+                  className="section-heading"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={revealTransition}
+                >
                   Dua
                 </motion.div>
 
-                <motion.p className="dua-text arabic" dir="rtl" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.08 }}>
+                <motion.p
+                  className="dua-text arabic"
+                  dir="rtl"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.08,
+                  }}
+                >
                   بَارَكَ اللَّهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
                 </motion.p>
-                <motion.p className="dua-text english" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.12 }}>
-                  May Allah bless you, shower His blessings upon you, and unite you both in goodness.
+
+                <motion.p
+                  className="dua-text english"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.14,
+                  }}
+                >
+                  May Allah bless you, shower His blessings upon you, and
+                  unite you both in goodness.
                 </motion.p>
-                <motion.p className="dua-bengali" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.16 }}>
-                  আল্লাহ আপনাকে বরকত দান করুন, আপনার ওপর তাঁর বরকত নাজিল করুন এবং আপনাদের দুজনকে কল্যাণের সঙ্গে একত্রিত রাখুন।
+
+                <motion.p
+                  className="dua-bengali"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.2,
+                  }}
+                >
+                  আল্লাহ আপনাকে বরকত দান করুন, আপনার ওপর তাঁর বরকত নাজিল
+                  করুন এবং আপনাদের দুজনকে কল্যাণের সঙ্গে একত্রিত রাখুন।
                 </motion.p>
-                <motion.p className="dua-reference" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.2 }}>
+
+                <motion.p
+                  className="dua-reference"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.25,
+                  }}
+                >
                   Jami' at-Tirmidhi 1091
                 </motion.p>
 
-                <motion.div className="closing-ornament" aria-hidden="true" initial={{ opacity: 0, scaleX: 0.7 }} whileInView={{ opacity: 1, scaleX: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.2 }} />
+                <motion.div
+                  className="closing-ornament"
+                  aria-hidden="true"
+                  initial={{ opacity: 0, scaleX: 0.7 }}
+                  whileInView={{ opacity: 1, scaleX: 1 }}
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.3,
+                  }}
+                />
 
-                <motion.p className="final-message" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.24 }}>
+                <motion.p
+                  className="final-message"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.34,
+                  }}
+                >
                   Your presence will make our joy complete. Insha’Allah.
                 </motion.p>
-                <motion.p className="final-message bangla" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.28 }}>
+
+                <motion.p
+                  className="final-message bangla"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.4,
+                  }}
+                >
                   আপনাদের উপস্থিতি আমাদের আনন্দকে পূর্ণতা দেবে, ইনশাআল্লাহ।
                 </motion.p>
               </div>
@@ -473,15 +967,31 @@ function App() {
         )}
       </AnimatePresence>
 
+      {/* SECTION NAVIGATION */}
       {isEnvelopeOpen && (
-        <button
+        <motion.button
           type="button"
           className="bottom-nav"
-          aria-label={isLastSection ? 'Return to the top' : 'Scroll to the next section'}
+          aria-label={
+            isLastSection
+              ? 'Return to the top'
+              : 'Scroll to the next section'
+          }
           onClick={moveToNextSection}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={
+            prefersReducedMotion ? undefined : { scale: 1.08 }
+          }
+          whileTap={
+            prefersReducedMotion ? undefined : { scale: 0.94 }
+          }
+          transition={{
+            duration: prefersReducedMotion ? 0.01 : 0.35,
+          }}
         >
           {isLastSection ? '↑' : '↓'}
-        </button>
+        </motion.button>
       )}
     </div>
   )
