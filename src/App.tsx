@@ -412,7 +412,7 @@ function App() {
                 >
                   <div className="mini-knot">RR</div>
                   <div className="occasion-title">
-                    <span className="occasion-tag">WALIMA</span>
+                    <span className="occasion-tag">WEDDING RECEPTION</span>
                     <span className="occasion-bengali">(বৌভাত)</span>
                   </div>
                 </motion.div>
@@ -449,7 +449,7 @@ function App() {
                     duration: motionDuration ?? 0.8,
                   }}
                 >
-                  With heartfelt joy and gratitude, we invite you to witness the Walima celebration and share in the blessings of this new chapter.
+                  With heartfelt joy and gratitude, we invite you to witness the Wedding Reception celebration and share in the blessings of this new chapter.
                 </motion.p>
 
                 <div className="ornament ornament-bottom" aria-hidden="true" />
@@ -588,7 +588,7 @@ function App() {
                   viewport={revealViewport}
                   transition={revealTransition}
                 >
-                  The Walima Celebration
+                  The Wedding Reception Celebration
                 </motion.div>
 
                 <div className="event-details">
@@ -733,7 +733,7 @@ function App() {
                 ) : (
                   <div
                     className="countdown-grid"
-                    aria-label="Countdown to the Walima celebration"
+                    aria-label="Countdown to the Wedding Reception celebration"
                     aria-live="off"
                   >
                     {[
@@ -791,7 +791,7 @@ function App() {
                   >
                     <img
                       src={invitationData.venue.image}
-                      alt="Royal venue entrance gate photographed for the Walima invitation"
+                      alt="Royal venue entrance gate photographed for the Wedding Reception invitation"
                       loading="lazy"
                     />
                   </motion.div>
