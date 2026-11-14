@@ -1,40 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@400;500;600;700&display=swap');
 
-:root {
-  --font-body: 'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
-  --font-numeric: 'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
-  --font-bengali: 'Noto Serif Bengali', 'Hind Siliguri', serif;
-  --font-arabic: 'Noto Naskh Arabic', 'Amiri', serif;
-  font-family: var(--font-body);
-  line-height: 1.5;
-  font-weight: 400;
-  color: #f4ead7;
-  background: #1b1211;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color-scheme: dark;
-}
+<!doctype html>
+<html lang="en">
 
-* { box-sizing: border-box; }
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/rr-icon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-html {
-  scroll-behavior: smooth;
-  background: #1b1211;
-}
+  <title>Rafiqul &amp; Rupali | Wedding Invitation</title>
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background: #1b1211;
-}
+  <meta
+    name="description"
+    content="You are warmly invited to celebrate the Wedding Reception of Rafiqul and Rupali."
+  />
 
-img { max-width: 100%; }
+  <!-- Open Graph: WhatsApp, Facebook, Messenger -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Rafiqul &amp; Rupali" />
+  <meta property="og:url" content="https://rafiqulandrupaliwalima.vercel.app/" />
+  <meta property="og:title" content="Rafiqul &amp; Rupali | Wedding Invitation" />
+  <meta
+    property="og:description"
+    content="A gathering of family, love, and gratitude. You are warmly invited!"
+  />
 
-button,
-a { -webkit-tap-highlight-color: transparent; }
-button { font: inherit; }
+  <meta
+    property="og:image"
+    content="https://rafiqulandrupaliwalima.vercel.app/assets/og-cover.jpg"
+  />
+  <meta
+    property="og:image:secure_url"
+    content="https://rafiqulandrupaliwalima.vercel.app/assets/og-cover.jpg"
+  />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Rafiqul and Rupali | Wedding Reception Invitation" />
 
-#root { min-height: 100vh; }
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Rafiqul &amp; Rupali | Wedding Reception Invitation" />
+  <meta
+    name="twitter:description"
+    content="A gathering of family, love, and gratitude. You are warmly invited!"
+  />
+  <meta
+    name="twitter:image"
+    content="https://rafiqulandrupaliwalima.vercel.app/assets/og-cover.jpg"
+  />
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>
