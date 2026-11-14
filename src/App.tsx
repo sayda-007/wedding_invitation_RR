@@ -163,7 +163,6 @@ function App() {
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               >
                 <div className="envelope-texture" aria-hidden="true" />
-                <div className="envelope-ornament envelope-ornament-left" aria-hidden="true" />
                 <div className="envelope-ornament envelope-ornament-right" aria-hidden="true" />
                 <div className="envelope-shadow" aria-hidden="true" />
 
@@ -261,10 +260,10 @@ function App() {
                   In the name of Allah, the Most Gracious, the Most Merciful.
                 </motion.p>
 
-                <div className="welcome-header">
+                <motion.div className="welcome-header" initial={{ opacity: 0, y: 18, scale: 0.96 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.12 }}>
                   <div className="mini-knot">RR</div>
                   <span className="occasion-tag">WALIMA</span>
-                </div>
+                </motion.div>
 
                 <motion.p className="bangla-invite" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7, delay: 0.15 }}>
                   আপনাকে সাদর আমন্ত্রণ
@@ -280,22 +279,28 @@ function App() {
 
             <section id="couple" className="invitation-section couple-section">
               <div className="section-frame couple-frame">
-                <div className="section-heading">The Couple</div>
+                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                  The Couple
+                </motion.div>
 
                 <div className="names-wrapper">
                   <div className="name-block groom-name">
-                    <span className="name-label">Groom</span>
+                    <motion.span className="name-label" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, delay: 0.08 }}>
+                      Groom
+                    </motion.span>
                     <motion.h2 className="animated-name" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7 }}>
                       <span>{invitationData.groom}</span>
                     </motion.h2>
                   </div>
 
-                  <div className="monogram-mark" aria-label="RR monogram">
+                  <motion.div className="monogram-mark" aria-label="RR monogram" initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.8, delay: 0.15 }}>
                     {invitationData.monogram}
-                  </div>
+                  </motion.div>
 
                   <div className="name-block bride-name">
-                    <span className="name-label">Bride</span>
+                    <motion.span className="name-label" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, delay: 0.12 }}>
+                      Bride
+                    </motion.span>
                     <motion.h2 className="animated-name" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, delay: 0.1 }}>
                       <span>{invitationData.bride}</span>
                     </motion.h2>
@@ -306,54 +311,66 @@ function App() {
 
             <section id="event" className="invitation-section event-section">
               <div className="section-frame event-box">
-                <div className="section-heading">The Walima Celebration</div>
+                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                  The Walima Celebration
+                </motion.div>
                 <div className="event-details">
-                  <p className="event-date">16 JANUARY 2027</p>
-                  <p className="event-day-banner">A gathering of family, love, and gratitude.</p>
+                  <motion.p className="event-date" initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.08 }}>
+                    16 JANUARY 2027
+                  </motion.p>
+                  <motion.p className="event-day-banner" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.14 }}>
+                    A gathering of family, love, and gratitude.
+                  </motion.p>
                 </div>
               </div>
             </section>
 
             <section id="schedule" className="invitation-section schedule-section">
               <div className="section-frame">
-                <div className="section-heading">Programme</div>
+                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                  Programme
+                </motion.div>
 
                 <div className="timeline">
-                  <div className="timeline-item">
+                  <motion.div className="timeline-item" initial={{ opacity: 0, y: 18, scale: 0.96 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.08 }}>
                     <span className="time">1:00 PM</span>
                     <span className="dot" aria-hidden="true" />
                     <span className="label">Feast Begins</span>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </section>
 
             <section id="countdown" className="invitation-section countdown-section">
               <div className="section-frame countdown-box">
-                <div className="section-heading">Countdown</div>
+                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                  Countdown
+                </motion.div>
 
                 {isEventReached ? (
-                  <p className="event-day-banner">
+                  <motion.p className="event-day-banner" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.08 }}>
                     The blessed day has arrived. We are grateful for your presence.
-                  </p>
+                  </motion.p>
                 ) : (
                   <div className="countdown-grid" aria-label="Countdown to the Walima celebration">
-                    <div className="count-box">
-                      <span className="value">{formatValue(countdown.days)}</span>
-                      <span className="unit">Days</span>
-                    </div>
-                    <div className="count-box">
-                      <span className="value">{formatValue(countdown.hours)}</span>
-                      <span className="unit">Hours</span>
-                    </div>
-                    <div className="count-box">
-                      <span className="value">{formatValue(countdown.minutes)}</span>
-                      <span className="unit">Minutes</span>
-                    </div>
-                    <div className="count-box">
-                      <span className="value">{formatValue(countdown.seconds)}</span>
-                      <span className="unit">Seconds</span>
-                    </div>
+                    {[
+                      { value: countdown.days, label: 'Days' },
+                      { value: countdown.hours, label: 'Hours' },
+                      { value: countdown.minutes, label: 'Minutes' },
+                      { value: countdown.seconds, label: 'Seconds' },
+                    ].map((item, index) => (
+                      <motion.div
+                        key={item.label}
+                        className="count-box"
+                        initial={{ opacity: 0, y: 18, scale: 0.94 }}
+                        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                        viewport={{ once: true, amount: 0.4 }}
+                        transition={{ duration: 0.7, delay: index * 0.08 }}
+                      >
+                        <span className="value">{formatValue(item.value)}</span>
+                        <span className="unit">{item.label}</span>
+                      </motion.div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -361,17 +378,19 @@ function App() {
 
             <section id="venue" className="invitation-section venue-section">
               <div className="section-frame venue-box">
-                <div className="section-heading">Venue & Location</div>
+                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                  Venue & Location
+                </motion.div>
 
                 <div className="venue-layout">
-                  <div className="venue-image-frame">
+                  <motion.div className="venue-image-frame" initial={{ opacity: 0, y: 20, scale: 0.97 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.8, delay: 0.08 }}>
                     <img
                       src={invitationData.venue.image}
                       alt="Royal venue entrance gate photographed for the Walima invitation"
                     />
-                  </div>
+                  </motion.div>
 
-                  <div className="venue-copy">
+                  <motion.div className="venue-copy" initial={{ opacity: 0, x: 18 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, delay: 0.12 }}>
                     <div className="location-icon" aria-hidden="true">
                       ⌖
                     </div>
@@ -386,18 +405,28 @@ function App() {
                     >
                       Open in Google Maps
                     </a>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </section>
 
             <section id="contacts" className="invitation-section contacts-section">
               <div className="section-frame">
-                <div className="section-heading">Contact</div>
+                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                  Contact
+                </motion.div>
 
                 <div className="contact-list">
-                  {invitationData.contacts.map((person) => (
-                    <a key={person.phone} href={`tel:${person.phone}`} className="contact-item">
+                  {invitationData.contacts.map((person, index) => (
+                    <motion.a
+                      key={person.phone}
+                      href={`tel:${person.phone}`}
+                      className="contact-item"
+                      initial={{ opacity: 0, x: 18 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, amount: 0.4 }}
+                      transition={{ duration: 0.7, delay: index * 0.08 }}
+                    >
                       <span className="phone-icon" aria-hidden="true">
                         ☎
                       </span>
@@ -405,7 +434,7 @@ function App() {
                         <strong>{person.name}</strong>
                         <span>{person.phone}</span>
                       </div>
-                    </a>
+                    </motion.a>
                   ))}
                 </div>
               </div>
@@ -413,25 +442,31 @@ function App() {
 
             <section id="closing" className="invitation-section closing-section">
               <div className="section-frame closing-box">
-                <div className="section-heading">Dua</div>
+                <motion.div className="section-heading" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.7 }}>
+                  Dua
+                </motion.div>
 
-                <p className="dua-text arabic" dir="rtl">
+                <motion.p className="dua-text arabic" dir="rtl" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.08 }}>
                   بَارَكَ اللَّهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
-                </p>
-                <p className="dua-text english">May Allah bless you, shower His blessings upon you, and unite you both in goodness.</p>
-                <p className="dua-bengali">
+                </motion.p>
+                <motion.p className="dua-text english" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.12 }}>
+                  May Allah bless you, shower His blessings upon you, and unite you both in goodness.
+                </motion.p>
+                <motion.p className="dua-bengali" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.16 }}>
                   আল্লাহ আপনাকে বরকত দান করুন, আপনার ওপর তাঁর বরকত নাজিল করুন এবং আপনাদের দুজনকে কল্যাণের সঙ্গে একত্রিত রাখুন।
-                </p>
-                <p className="dua-reference">Jami' at-Tirmidhi 1091</p>
+                </motion.p>
+                <motion.p className="dua-reference" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.2 }}>
+                  Jami' at-Tirmidhi 1091
+                </motion.p>
 
-                <div className="closing-ornament" aria-hidden="true" />
+                <motion.div className="closing-ornament" aria-hidden="true" initial={{ opacity: 0, scaleX: 0.7 }} whileInView={{ opacity: 1, scaleX: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.2 }} />
 
-                <p className="final-message">
+                <motion.p className="final-message" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.24 }}>
                   Your presence will make our joy complete. Insha’Allah.
-                </p>
-                <p className="final-message bangla">
+                </motion.p>
+                <motion.p className="final-message bangla" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7, delay: 0.28 }}>
                   আপনাদের উপস্থিতি আমাদের আনন্দকে পূর্ণতা দেবে, ইনশাআল্লাহ।
-                </p>
+                </motion.p>
               </div>
             </section>
           </motion.main>
