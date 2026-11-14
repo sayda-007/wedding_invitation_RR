@@ -741,8 +741,8 @@ body::before {
 .occasion-tag {
   color: #f3d995;
   font-family: 'Cinzel', serif;
-  font-size: clamp(1.25rem, 2.2vw, 1.65rem);
-  font-weight: 700;
+  font-size: clamp(3.5rem, 3vw, 2rem);
+  font-weight: 1000;
   line-height: 1.25;
   letter-spacing: .38rem;
   text-shadow: 0 0 14px rgba(231,201,143,.2);
@@ -751,7 +751,7 @@ body::before {
 .occasion-bengali {
   color: rgba(231,201,143,.85);
   font-family: 'Noto Serif Bengali', 'Hind Siliguri', serif;
-  font-size: .78rem;
+  font-size: .80rem;
   font-weight: 500;
   line-height: 1.6;
   letter-spacing: .04rem;
