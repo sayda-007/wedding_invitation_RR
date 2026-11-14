@@ -774,7 +774,7 @@ body::before {
   margin: 0;
   color: #f4dca7;
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1.65rem, 3vw, 2.3rem);
+  font-size: clamp(3.5rem, 3vw, 2.3rem);
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: .015rem;
@@ -787,7 +787,7 @@ body::before {
   margin: 0;
   color: rgba(239,211,157,.94);
   font-family: 'Noto Serif Bengali', 'Hind Siliguri', serif;
-  font-size: clamp(1.02rem, 1.6vw, 1.22rem);
+  font-size: clamp(2rem, 1.6vw, 1.22rem);
   font-weight: 500;
   line-height: 1.8;
   text-wrap: balance;
@@ -1493,3 +1493,64 @@ body::before {
   margin-inline: auto;
   text-align: center;
 }
+
+/* WEDDING RECEPTION — CENTERED MONOGRAM AND TITLE */
+.cover-frame .welcome-header {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .65rem;
+  margin-bottom: .85rem;
+}
+
+.cover-frame .mini-knot {
+  margin: 0 auto;
+}
+
+.cover-frame .occasion-title {
+  align-items: center;
+  gap: .2rem;
+}
+
+/* English heading: independently enlarged */
+.cover-frame .occasion-tag {
+  font-size: clamp(1.6rem, 2.6vw, 2rem);
+  line-height: 1.18;
+  letter-spacing: .3rem;
+  text-align: center;
+}
+
+/* Bengali heading: independently enlarged */
+.cover-frame .occasion-bengali {
+  font-size: clamp(1rem, 1.45vw, 1.2rem);
+  line-height: 1.75;
+  letter-spacing: .03rem;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .cover-frame .occasion-tag {
+    font-size: clamp(1.4rem, 5vw, 1.7rem);
+    letter-spacing: .22rem;
+  }
+
+  .cover-frame .occasion-bengali {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cover-frame .welcome-header {
+    gap: .55rem;
+  }
+
+  .cover-frame .occasion-tag {
+    font-size: clamp(1.35rem, 5.8vw, 1.55rem);
+    letter-spacing: .18rem;
+  }
+
+  .cover-frame .occasion-bengali {
+    font-size: 1rem;
+  }
+}
+
