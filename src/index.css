@@ -17,12 +17,11 @@
   color-scheme: dark;
 }
 
+* { box-sizing: border-box; }
+
 html {
   scroll-behavior: smooth;
-}
-
-* {
-  box-sizing: border-box;
+  background: #1b1211;
 }
 
 body {
@@ -32,19 +31,10 @@ body {
   background: #1b1211;
 }
 
-img {
-  max-width: 100%;
-}
+img { max-width: 100%; }
 
 button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
+a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; }
 
-button {
-  font: inherit;
-}
-
-#root {
-  min-height: 100vh;
-}
+#root { min-height: 100vh; }

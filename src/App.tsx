@@ -1,4 +1,3 @@
-
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import './App.css'
@@ -25,7 +24,10 @@ const sectionIds = [
 
 type SectionId = (typeof sectionIds)[number]
 
-const formatValue = (value: number) => String(value).padStart(2, '0')
+const contactBengaliNames = [
+  'মো: আব্দুস সাত্তার শেখ',
+  'মো: সাজিদুল ইসলাম সাজিদ',
+]
 
 const sparkIds = Array.from({ length: 18 }, (_, index) => index)
 
@@ -59,26 +61,26 @@ const revealScale = {
   visible: { opacity: 1, scale: 1 },
 }
 
+const formatValue = (value: number) => String(value).padStart(2, '0')
+
 function App() {
   const prefersReducedMotion = useReducedMotion()
 
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [isOpening, setIsOpening] = useState(false)
   const [activeSection, setActiveSection] = useState<SectionId>('cover')
-
   const [countdown, setCountdown] = useState<CountdownState>({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   })
-
   const [isEventReached, setIsEventReached] = useState(false)
 
   const openLockRef = useRef(false)
   const openTimerRef = useRef<number | null>(null)
 
-  // Open the invitation with one tap only.
+  // The seal opens the gatefold once. The delay lets the light and sparkles finish.
   const openEnvelope = useCallback(() => {
     if (openLockRef.current) return
 
@@ -95,7 +97,7 @@ function App() {
       setIsEnvelopeOpen(true)
       setIsOpening(false)
       openTimerRef.current = null
-    }, 1150)
+    }, 1700)
   }, [prefersReducedMotion])
 
   useEffect(() => {
@@ -106,7 +108,7 @@ function App() {
     }
   }, [])
 
-  // Countdown uses the explicit event timezone/offset in invitationData.
+  // The eventDateTime value should include Bangladesh's UTC+06:00 offset.
   useEffect(() => {
     const updateCountdown = () => {
       const targetDate = new Date(invitationData.eventDateTime)
@@ -114,17 +116,11 @@ function App() {
 
       if (!Number.isFinite(targetDate.getTime()) || difference <= 0) {
         setIsEventReached(true)
-        setCountdown({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        })
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 })
         return
       }
 
       const totalSeconds = Math.floor(difference / 1000)
-
       setIsEventReached(false)
       setCountdown({
         days: Math.floor(totalSeconds / 86400),
@@ -135,13 +131,11 @@ function App() {
     }
 
     updateCountdown()
-
     const timer = window.setInterval(updateCountdown, 1000)
-
     return () => window.clearInterval(timer)
   }, [])
 
-  // Track the currently visible invitation section.
+  // Keep the bottom navigation in sync with the visible page section.
   useEffect(() => {
     if (!isEnvelopeOpen) return
 
@@ -156,12 +150,10 @@ function App() {
         const visibleEntries = entries
           .filter((entry) => entry.isIntersecting)
           .sort(
-            (first, second) =>
-              second.intersectionRatio - first.intersectionRatio,
+            (first, second) => second.intersectionRatio - first.intersectionRatio,
           )
 
         const visibleSection = visibleEntries[0]
-
         if (visibleSection?.target.id) {
           setActiveSection(visibleSection.target.id as SectionId)
         }
@@ -174,7 +166,6 @@ function App() {
     )
 
     sections.forEach((section) => observer.observe(section))
-
     return () => observer.disconnect()
   }, [isEnvelopeOpen])
 
@@ -196,14 +187,12 @@ function App() {
       scrollToSection('cover')
       return
     }
-
     scrollToSection(sectionIds[currentIndex + 1])
   }, [currentIndex, isLastSection, scrollToSection])
 
   const venueName = invitationData.venue.name
   const venueAddress = invitationData.venue.address
   const venueBengaliName = invitationData.venue.bengaliName
-
   const motionDuration = prefersReducedMotion ? 0.01 : undefined
 
   return (
@@ -218,9 +207,7 @@ function App() {
             animate={{ opacity: 1 }}
             exit={{
               opacity: 0,
-              transition: {
-                duration: prefersReducedMotion ? 0.01 : 0.6,
-              },
+              transition: { duration: prefersReducedMotion ? 0.01 : 0.6 },
             }}
           >
             <div className="envelope-wrapper">
@@ -234,30 +221,19 @@ function App() {
                 }}
               >
                 <div className="envelope-texture" aria-hidden="true" />
-
                 <div
                   className="envelope-ornament envelope-ornament-right"
                   aria-hidden="true"
                 />
-
                 <div className="envelope-shadow" aria-hidden="true" />
 
-                {/* LEFT GATEFOLD PANEL */}
                 <motion.div
                   className="envelope-panel left"
                   aria-hidden="true"
                   animate={
                     isOpening
-                      ? {
-                          x: '-54%',
-                          rotateY: -72,
-                          rotateZ: -1.2,
-                        }
-                      : {
-                          x: 0,
-                          rotateY: 0,
-                          rotateZ: 0,
-                        }
+                      ? { x: '-54%', rotateY: -72, rotateZ: -1.2 }
+                      : { x: 0, rotateY: 0, rotateZ: 0 }
                   }
                   transition={{
                     duration: prefersReducedMotion ? 0.01 : 1.15,
@@ -265,22 +241,13 @@ function App() {
                   }}
                 />
 
-                {/* RIGHT GATEFOLD PANEL */}
                 <motion.div
                   className="envelope-panel right"
                   aria-hidden="true"
                   animate={
                     isOpening
-                      ? {
-                          x: '54%',
-                          rotateY: 72,
-                          rotateZ: 1.2,
-                        }
-                      : {
-                          x: 0,
-                          rotateY: 0,
-                          rotateZ: 0,
-                        }
+                      ? { x: '54%', rotateY: 72, rotateZ: 1.2 }
+                      : { x: 0, rotateY: 0, rotateZ: 0 }
                   }
                   transition={{
                     duration: prefersReducedMotion ? 0.01 : 1.15,
@@ -288,32 +255,23 @@ function App() {
                   }}
                 />
 
-                {/* INNER INVITATION */}
                 <div className="envelope-inner" aria-hidden="true">
                   <div className="inner-frame">
                     <span className="inner-orbit" />
-                    <span className="inner-monogram">
-                      {invitationData.monogram}
-                    </span>
+                    <span className="inner-monogram">{invitationData.monogram}</span>
                   </div>
                 </div>
 
-                {/* CENTER LIGHT EFFECT */}
+                {/* CENTRAL GOLDEN LIGHT */}
                 <motion.div
                   className="light-burst"
                   aria-hidden="true"
                   animate={
                     isOpening && !prefersReducedMotion
-                      ? {
-                          opacity: [0, 1, 0.85],
-                          scale: [0.65, 1.5, 2.2],
-                        }
+                      ? { opacity: [0, 1, 0.85], scale: [0.65, 1.5, 2.2] }
                       : { opacity: 0, scale: 0.65 }
                   }
-                  transition={{
-                    duration: 1.1,
-                    ease: 'easeOut',
-                  }}
+                  transition={{ duration: 1.1, ease: 'easeOut' }}
                 >
                   <span className="light-ray ray-1" />
                   <span className="light-ray ray-2" />
@@ -324,7 +282,7 @@ function App() {
                   <span className="light-core" />
                 </motion.div>
 
-                {/* SPARKLES */}
+                {/* OPENING SPARKLES */}
                 <div className="spark-field" aria-hidden="true">
                   {sparkIds.map((sparkId) => (
                     <span
@@ -334,13 +292,12 @@ function App() {
                   ))}
                 </div>
 
-                {/* WAX SEAL AND OPENING LABEL */}
+                {/* WAX SEAL */}
                 <div className="seal-cluster">
                   <motion.button
                     type="button"
                     className={`wax-seal ${isOpening ? 'seal-released' : ''}`}
                     aria-label="Open the invitation"
-                    aria-disabled={isOpening}
                     disabled={isOpening}
                     onClick={openEnvelope}
                     whileHover={
@@ -360,9 +317,7 @@ function App() {
                     }}
                   >
                     <span className="seal-rim" />
-                    <span className="seal-rr">
-                      {invitationData.monogram}
-                    </span>
+                    <span className="seal-rr">{invitationData.monogram}</span>
                     <span className="seal-glint" aria-hidden="true" />
                   </motion.button>
 
@@ -390,15 +345,9 @@ function App() {
           <motion.main
             key="invitation-page"
             className="invitation-page"
-            initial={{
-              opacity: 0,
-              y: prefersReducedMotion ? 0 : 28,
-            }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 28 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{
-              opacity: 0,
-              y: prefersReducedMotion ? 0 : 18,
-            }}
+            exit={{ opacity: 0, y: prefersReducedMotion ? 0 : 18 }}
             transition={{
               duration: prefersReducedMotion ? 0.01 : 0.8,
               ease: 'easeOut',
@@ -413,11 +362,8 @@ function App() {
               <span className="sparkle sparkle-6" />
             </div>
 
-            {/* COVER */}
-            <section
-              id="cover"
-              className="invitation-section cover-section"
-            >
+            {/* FIRST PAGE — COVER */}
+            <section id="cover" className="invitation-section cover-section">
               <div className="section-frame cover-frame">
                 <div className="ornament ornament-top" aria-hidden="true" />
 
@@ -464,10 +410,12 @@ function App() {
                   }}
                 >
                   <div className="mini-knot">RR</div>
-                  <span className="occasion-tag">WALIMA</span>
+                  <div className="occasion-title">
+                    <span className="occasion-tag">WALIMA</span>
+                    <span className="occasion-bengali">(বৌভাত)</span>
+                  </div>
                 </motion.div>
 
-                {/* PERSONAL INVITATION GREETING */}
                 <motion.div
                   className="invitation-greeting"
                   variants={revealUp}
@@ -483,7 +431,6 @@ function App() {
                   <p className="invitation-greeting-english">
                     A warm invitation to you and your family
                   </p>
-
                   <p className="invitation-greeting-bengali">
                     আপনাকে এবং আপনার পরিবার-কে সাদর আমন্ত্রণ
                   </p>
@@ -510,11 +457,8 @@ function App() {
               </div>
             </section>
 
-            {/* THE COUPLE */}
-            <section
-              id="couple"
-              className="invitation-section couple-section"
-            >
+            {/* SECOND PAGE — THE COUPLE */}
+            <section id="couple" className="invitation-section couple-section">
               <div className="section-frame couple-frame">
                 <motion.div
                   className="section-heading"
@@ -556,6 +500,20 @@ function App() {
                     >
                       <span>{invitationData.groom}</span>
                     </motion.h2>
+
+                    <motion.p
+                      className="couple-bengali-name"
+                      variants={revealLeft}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={revealViewport}
+                      transition={{
+                        ...revealTransition,
+                        delay: prefersReducedMotion ? 0 : 0.24,
+                      }}
+                    >
+                      মোঃ রফিকুল ইসলাম (পিন্টু)
+                    </motion.p>
                   </div>
 
                   <motion.div
@@ -601,16 +559,27 @@ function App() {
                     >
                       <span>{invitationData.bride}</span>
                     </motion.h2>
+
+                    <motion.p
+                      className="couple-bengali-name"
+                      variants={revealRight}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={revealViewport}
+                      transition={{
+                        ...revealTransition,
+                        delay: prefersReducedMotion ? 0 : 0.24,
+                      }}
+                    >
+                      রূপালী আক্তার
+                    </motion.p>
                   </div>
                 </div>
               </div>
             </section>
 
-            {/* EVENT */}
-            <section
-              id="event"
-              className="invitation-section event-section"
-            >
+            {/* THIRD PAGE — EVENT DATE */}
+            <section id="event" className="invitation-section event-section">
               <div className="section-frame event-box">
                 <motion.div
                   className="section-heading"
@@ -639,6 +608,48 @@ function App() {
                   </motion.p>
 
                   <motion.p
+                    className="event-weekday"
+                    variants={revealUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={revealViewport}
+                    transition={{
+                      ...revealTransition,
+                      delay: prefersReducedMotion ? 0 : 0.16,
+                    }}
+                  >
+                    SATURDAY
+                  </motion.p>
+
+                  <motion.p
+                    className="event-bengali-date"
+                    variants={revealUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={revealViewport}
+                    transition={{
+                      ...revealTransition,
+                      delay: prefersReducedMotion ? 0 : 0.22,
+                    }}
+                  >
+                    শনিবার, ২ মাঘ, ১৪৩৩ বঙ্গাব্দ
+                  </motion.p>
+
+                  <motion.p
+                    className="event-hijri-date"
+                    variants={revealUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={revealViewport}
+                    transition={{
+                      ...revealTransition,
+                      delay: prefersReducedMotion ? 0 : 0.28,
+                    }}
+                  >
+                    ৮ শাবান, ১৪৪৮ হিজরি
+                  </motion.p>
+
+                  <motion.p
                     className="event-day-banner"
                     variants={revealUp}
                     initial="hidden"
@@ -646,7 +657,7 @@ function App() {
                     viewport={revealViewport}
                     transition={{
                       ...revealTransition,
-                      delay: prefersReducedMotion ? 0 : 0.2,
+                      delay: prefersReducedMotion ? 0 : 0.34,
                     }}
                   >
                     A gathering of family, love, and gratitude.
@@ -655,11 +666,8 @@ function App() {
               </div>
             </section>
 
-            {/* PROGRAMME */}
-            <section
-              id="schedule"
-              className="invitation-section schedule-section"
-            >
+            {/* FOURTH PAGE — PROGRAMME */}
+            <section id="schedule" className="invitation-section schedule-section">
               <div className="section-frame">
                 <motion.div
                   className="section-heading"
@@ -686,17 +694,19 @@ function App() {
                   >
                     <span className="time">1:00 PM</span>
                     <span className="dot" aria-hidden="true" />
-                    <span className="label">Feast Begins</span>
+                    <div className="timeline-copy">
+                      <span className="label">Feast Begins</span>
+                      <span className="timeline-bengali">
+                        (দুপুর ১টায় ভোজ শুরু হবে।)
+                      </span>
+                    </div>
                   </motion.div>
                 </div>
               </div>
             </section>
 
-            {/* COUNTDOWN */}
-            <section
-              id="countdown"
-              className="invitation-section countdown-section"
-            >
+            {/* FIFTH PAGE — COUNTDOWN (UNCHANGED) */}
+            <section id="countdown" className="invitation-section countdown-section">
               <div className="section-frame countdown-box">
                 <motion.div
                   className="section-heading"
@@ -745,9 +755,7 @@ function App() {
                           delay: prefersReducedMotion ? 0 : index * 0.09,
                         }}
                       >
-                        <span className="value">
-                          {formatValue(item.value)}
-                        </span>
+                        <span className="value">{formatValue(item.value)}</span>
                         <span className="unit">{item.label}</span>
                       </motion.div>
                     ))}
@@ -756,11 +764,8 @@ function App() {
               </div>
             </section>
 
-            {/* VENUE */}
-            <section
-              id="venue"
-              className="invitation-section venue-section"
-            >
+            {/* SIXTH PAGE — VENUE (UNCHANGED) */}
+            <section id="venue" className="invitation-section venue-section">
               <div className="section-frame venue-box">
                 <motion.div
                   className="section-heading"
@@ -803,18 +808,10 @@ function App() {
                       delay: prefersReducedMotion ? 0 : 0.14,
                     }}
                   >
-                    <div className="location-icon" aria-hidden="true">
-                      ⌖
-                    </div>
-
+                    <div className="location-icon" aria-hidden="true">⌖</div>
                     <h3 className="venue-name">{venueName}</h3>
-
                     <p className="venue-address">{venueAddress}</p>
-
-                    <p className="venue-bengali-name">
-                      ({venueBengaliName})
-                    </p>
-
+                    <p className="venue-bengali-name">({venueBengaliName})</p>
                     <a
                       href={invitationData.venue.mapUrl}
                       target="_blank"
@@ -828,11 +825,8 @@ function App() {
               </div>
             </section>
 
-            {/* CONTACTS */}
-            <section
-              id="contacts"
-              className="invitation-section contacts-section"
-            >
+            {/* SEVENTH PAGE — CONTACTS */}
+            <section id="contacts" className="invitation-section contacts-section">
               <div className="section-frame">
                 <motion.div
                   className="section-heading"
@@ -860,13 +854,15 @@ function App() {
                         delay: prefersReducedMotion ? 0 : index * 0.12,
                       }}
                     >
-                      <span className="phone-icon" aria-hidden="true">
-                        ☎
-                      </span>
-
-                      <div>
+                      <span className="phone-icon" aria-hidden="true">☎</span>
+                      <div className="contact-copy">
                         <strong>{person.name}</strong>
-                        <span>{person.phone}</span>
+                        {contactBengaliNames[index] && (
+                          <span className="contact-bengali-name">
+                            ({contactBengaliNames[index]})
+                          </span>
+                        )}
+                        <span className="contact-number">{person.phone}</span>
                       </div>
                     </motion.a>
                   ))}
@@ -874,11 +870,8 @@ function App() {
               </div>
             </section>
 
-            {/* CLOSING DUA */}
-            <section
-              id="closing"
-              className="invitation-section closing-section"
-            >
+            {/* EIGHTH PAGE — CLOSING DUA */}
+            <section id="closing" className="invitation-section closing-section">
               <div className="section-frame closing-box">
                 <motion.div
                   className="section-heading"
@@ -989,6 +982,34 @@ function App() {
                 >
                   আপনাদের উপস্থিতি আমাদের আনন্দকে পূর্ণতা দেবে, ইনশাআল্লাহ।
                 </motion.p>
+
+                <motion.p
+                  className="warm-welcome"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.46,
+                  }}
+                >
+                  Warm welcome by Md. Saifan Sadaf and family.
+                </motion.p>
+
+                <motion.p
+                  className="warm-welcome-bengali"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.52,
+                  }}
+                >
+                  (মোঃ সাঈফান সাদাফ ও পরিবারের পক্ষ থেকে উষ্ণ অভ্যর্থনা)
+                </motion.p>
               </div>
             </section>
           </motion.main>
@@ -1001,22 +1022,14 @@ function App() {
           type="button"
           className="bottom-nav"
           aria-label={
-            isLastSection
-              ? 'Return to the top'
-              : 'Scroll to the next section'
+            isLastSection ? 'Return to the top' : 'Scroll to the next section'
           }
           onClick={moveToNextSection}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          whileHover={
-            prefersReducedMotion ? undefined : { scale: 1.08 }
-          }
-          whileTap={
-            prefersReducedMotion ? undefined : { scale: 0.94 }
-          }
-          transition={{
-            duration: prefersReducedMotion ? 0.01 : 0.35,
-          }}
+          whileHover={prefersReducedMotion ? undefined : { scale: 1.08 }}
+          whileTap={prefersReducedMotion ? undefined : { scale: 0.94 }}
+          transition={{ duration: prefersReducedMotion ? 0.01 : 0.35 }}
         >
           {isLastSection ? '↑' : '↓'}
         </motion.button>
