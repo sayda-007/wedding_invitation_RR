@@ -449,9 +449,7 @@ function App() {
                     duration: motionDuration ?? 0.8,
                   }}
                 >
-                  With heartfelt joy and gratitude, we invite you to witness
-                  our Walima celebration and share in the blessings of this
-                  new chapter.
+                  With heartfelt joy and gratitude, we invite you to witness the Walima celebration and share in the blessings of this new chapter.
                 </motion.p>
 
                 <div className="ornament ornament-bottom" aria-hidden="true" />
