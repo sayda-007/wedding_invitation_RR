@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { invitationData } from './data/invitationData'
 
@@ -38,18 +38,29 @@ function App() {
     seconds: 0,
   })
   const [isEventReached, setIsEventReached] = useState(false)
+  const openLockRef = useRef(false)
+  const openTimerRef = useRef<number | null>(null)
 
   const openEnvelope = () => {
-    if (isEnvelopeOpen || isOpening) {
+    if (openLockRef.current || isEnvelopeOpen || isOpening) {
       return
     }
 
+    openLockRef.current = true
     setIsOpening(true)
-    window.setTimeout(() => {
+    openTimerRef.current = window.setTimeout(() => {
       setIsEnvelopeOpen(true)
       setIsOpening(false)
     }, 1100)
   }
+
+  useEffect(() => {
+    return () => {
+      if (openTimerRef.current !== null) {
+        window.clearTimeout(openTimerRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -192,33 +203,28 @@ function App() {
                   ))}
                 </div>
 
-                <motion.button
-                  type="button"
-                  className={`wax-seal ${isOpening ? 'seal-released' : ''}`}
-                  aria-label="Open the invitation"
-                  onClick={openEnvelope}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault()
-                      openEnvelope()
-                    }
-                  }}
-                  whileTap={{ scale: 0.97 }}
-                  transition={{ type: 'spring', stiffness: 320, damping: 20 }}
-                >
-                  <span className="seal-rim" />
-                  <span className="seal-rr">{invitationData.monogram}</span>
-                  <span className="seal-glint" aria-hidden="true" />
-                </motion.button>
+                <div className="seal-cluster" aria-hidden="false">
+                  <motion.button
+                    type="button"
+                    className={`wax-seal ${isOpening ? 'seal-released' : ''}`}
+                    aria-label="Open the invitation"
+                    onClick={openEnvelope}
+                    transition={{ type: 'spring', stiffness: 320, damping: 20 }}
+                  >
+                    <span className="seal-rim" />
+                    <span className="seal-rr">{invitationData.monogram}</span>
+                    <span className="seal-glint" aria-hidden="true" />
+                  </motion.button>
 
-                <motion.div
-                  className="click-here"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.6 }}
-                >
-                  click here
-                </motion.div>
+                  <motion.div
+                    className="click-here"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.6 }}
+                  >
+                    click here
+                  </motion.div>
+                </div>
               </motion.div>
             </div>
           </motion.div>
