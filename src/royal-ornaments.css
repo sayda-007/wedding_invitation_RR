@@ -312,3 +312,473 @@
     transition: none !important;
   }
 }
+
+
+
+
+/* =========================================================
+   RR WALIMA — FINAL ROYAL ORNAMENTS & OPENING EFFECTS
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   1. REMOVE THE UNWANTED GEOMETRIC BOX FROM THE COVER
+   --------------------------------------------------------- */
+
+.cover-frame::before,
+.cover-frame::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  background: none !important;
+}
+
+
+/* ---------------------------------------------------------
+   2. ADD DELICATE ROYAL CORNER ORNAMENTS TO SECTION CARDS
+   --------------------------------------------------------- */
+
+.section-frame:not(.cover-frame)::before,
+.section-frame:not(.cover-frame)::after {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+}
+
+.section-frame:not(.cover-frame)::before {
+  top: 13px;
+  left: 13px;
+
+  border-top: 1px solid rgba(232, 199, 139, 0.62);
+  border-left: 1px solid rgba(232, 199, 139, 0.62);
+  border-radius: 19px 0 0 0;
+
+  background:
+    radial-gradient(
+      circle at 0 0,
+      rgba(255, 230, 174, 0.8) 0 1.5px,
+      transparent 2.6px
+    ),
+    radial-gradient(
+      ellipse at 14px 9px,
+      rgba(224, 185, 117, 0.16),
+      transparent 70%
+    );
+
+  filter: drop-shadow(0 0 5px rgba(215, 174, 103, 0.2));
+}
+
+.section-frame:not(.cover-frame)::after {
+  right: 13px;
+  bottom: 13px;
+
+  border-right: 1px solid rgba(232, 199, 139, 0.62);
+  border-bottom: 1px solid rgba(232, 199, 139, 0.62);
+  border-radius: 0 0 19px 0;
+
+  background:
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(255, 230, 174, 0.8) 0 1.5px,
+      transparent 2.6px
+    ),
+    radial-gradient(
+      ellipse at 43px 45px,
+      rgba(224, 185, 117, 0.16),
+      transparent 70%
+    );
+
+  filter: drop-shadow(0 0 5px rgba(215, 174, 103, 0.2));
+}
+
+.section-frame:not(.cover-frame) > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ---------------------------------------------------------
+   3. ENHANCE THE EXISTING COVER ORNAMENT DIVIDERS
+   --------------------------------------------------------- */
+
+.ornament-top,
+.ornament-bottom {
+  opacity: 1;
+
+  background-image:
+    radial-gradient(
+      ellipse 5px 11px at 50% 25%,
+      rgba(244, 215, 163, 0.68),
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 5px 11px at 50% 75%,
+      rgba(244, 215, 163, 0.68),
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 11px 5px at 44% 50%,
+      rgba(244, 215, 163, 0.62),
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 11px 5px at 56% 50%,
+      rgba(244, 215, 163, 0.62),
+      transparent 75%
+    ),
+    radial-gradient(
+      circle at center,
+      rgba(255, 234, 191, 0.98) 0 2px,
+      transparent 3px
+    ),
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(214, 181, 120, 0.2),
+      transparent
+    );
+
+  background-position: center;
+  background-repeat: no-repeat;
+
+  filter: drop-shadow(0 0 5px rgba(222, 183, 111, 0.16));
+}
+
+
+/* ---------------------------------------------------------
+   4. CINEMATIC GOLDEN LIGHT SWEEP ON THE OPENING PANELS
+   --------------------------------------------------------- */
+
+.envelope-panel::after {
+  background-image:
+    linear-gradient(
+      112deg,
+      transparent 40%,
+      rgba(255, 242, 202, 0.05) 46%,
+      rgba(255, 232, 176, 0.42) 50%,
+      rgba(255, 223, 161, 0.12) 54%,
+      transparent 61%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.055),
+      transparent 18%,
+      transparent 82%,
+      rgba(255, 192, 101, 0.05)
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(255, 232, 175, 0.055),
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 247, 220, 0.035),
+      transparent 24%,
+      transparent 76%,
+      rgba(0, 0, 0, 0.10)
+    );
+
+  background-size:
+    220% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%;
+
+  background-position:
+    -145% 0,
+    0 0,
+    0 0,
+    0 0;
+}
+
+.envelope.is-opening .envelope-panel::after {
+  animation: rrPanelLightSweep 1.25s cubic-bezier(0.22, 0.8, 0.3, 1) both;
+}
+
+@keyframes rrPanelLightSweep {
+  0% {
+    background-position:
+      -145% 0,
+      0 0,
+      0 0,
+      0 0;
+  }
+
+  100% {
+    background-position:
+      145% 0,
+      0 0,
+      0 0,
+      0 0;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   5. IMPROVE THE CENTRAL LIGHT BURST
+   Let Framer Motion control its main opacity and scale.
+   --------------------------------------------------------- */
+
+.envelope.is-opening .light-burst {
+  animation: none !important;
+}
+
+.envelope.is-opening .light-ray {
+  animation: rrRayReveal 1.15s ease-out both;
+}
+
+.envelope.is-opening .ray-1 {
+  animation-delay: 0.02s;
+}
+
+.envelope.is-opening .ray-2 {
+  animation-delay: 0.08s;
+}
+
+.envelope.is-opening .ray-3 {
+  animation-delay: 0.14s;
+}
+
+.envelope.is-opening .ray-4 {
+  animation-delay: 0.2s;
+}
+
+.envelope.is-opening .ray-5 {
+  animation-delay: 0.26s;
+}
+
+.envelope.is-opening .ray-6 {
+  animation-delay: 0.32s;
+}
+
+@keyframes rrRayReveal {
+  0% {
+    opacity: 0;
+    transform:
+      translate(-50%, -50%)
+      rotate(var(--rotation))
+      scaleY(0.15);
+  }
+
+  35% {
+    opacity: 0.85;
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate(-50%, -50%)
+      rotate(var(--rotation))
+      scaleY(1.3);
+  }
+}
+
+
+/* ---------------------------------------------------------
+   6. GOLDEN SPARKLES DURING ENVELOPE OPENING
+   --------------------------------------------------------- */
+
+.envelope.is-opening .spark {
+  width: 4px;
+  height: 4px;
+  background: #fff0c5;
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 8px rgba(255, 239, 193, 0.95),
+    0 0 18px rgba(255, 213, 126, 0.8),
+    0 0 30px rgba(224, 174, 87, 0.42);
+
+  animation: rrSparkle 1.4s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+/* Four-point star detail */
+
+.envelope.is-opening .spark::before,
+.envelope.is-opening .spark::after {
+  content: '';
+  position: absolute;
+  display: block;
+  left: 50%;
+  top: 50%;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(255, 244, 211, 0.95),
+    transparent
+  );
+  box-shadow: 0 0 6px rgba(255, 228, 164, 0.6);
+}
+
+.envelope.is-opening .spark::before {
+  width: 1px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+}
+
+.envelope.is-opening .spark::after {
+  width: 16px;
+  height: 1px;
+  transform: translate(-50%, -50%);
+}
+
+
+/* Stagger the sparkles instead of showing all of them together */
+
+.envelope.is-opening .spark-1  { animation-delay: 0.02s; }
+.envelope.is-opening .spark-2  { animation-delay: 0.09s; }
+.envelope.is-opening .spark-3  { animation-delay: 0.16s; }
+.envelope.is-opening .spark-4  { animation-delay: 0.23s; }
+.envelope.is-opening .spark-5  { animation-delay: 0.30s; }
+.envelope.is-opening .spark-6  { animation-delay: 0.37s; }
+.envelope.is-opening .spark-7  { animation-delay: 0.44s; }
+.envelope.is-opening .spark-8  { animation-delay: 0.51s; }
+.envelope.is-opening .spark-9  { animation-delay: 0.58s; }
+.envelope.is-opening .spark-10 { animation-delay: 0.65s; }
+.envelope.is-opening .spark-11 { animation-delay: 0.72s; }
+.envelope.is-opening .spark-12 { animation-delay: 0.79s; }
+.envelope.is-opening .spark-13 { animation-delay: 0.86s; }
+.envelope.is-opening .spark-14 { animation-delay: 0.93s; }
+.envelope.is-opening .spark-15 { animation-delay: 1.00s; }
+.envelope.is-opening .spark-16 { animation-delay: 1.07s; }
+.envelope.is-opening .spark-17 { animation-delay: 1.14s; }
+.envelope.is-opening .spark-18 { animation-delay: 1.21s; }
+
+
+@keyframes rrSparkle {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.15) rotate(0deg);
+  }
+
+  25% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.1) rotate(25deg);
+  }
+
+  65% {
+    opacity: 0.85;
+    transform: translateY(-18px) scale(0.85) rotate(45deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-34px) scale(1.45) rotate(65deg);
+  }
+}
+
+
+/* ---------------------------------------------------------
+   7. CINEMATIC GLOW AROUND THE RR WAX SEAL
+   --------------------------------------------------------- */
+
+.seal-cluster::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  width: clamp(185px, 36vw, 290px);
+  height: clamp(185px, 36vw, 290px);
+
+  transform: translate(-50%, -50%) scale(0.5);
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(255, 244, 210, 0.24) 0%,
+    rgba(255, 216, 143, 0.18) 28%,
+    rgba(221, 166, 86, 0.09) 48%,
+    transparent 72%
+  );
+
+  border: 1px solid rgba(255, 229, 174, 0.22);
+
+  box-shadow:
+    0 0 24px rgba(255, 215, 145, 0.18),
+    inset 0 0 26px rgba(255, 235, 189, 0.12);
+
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.envelope.is-opening .seal-cluster::before {
+  animation: rrSealHalo 1s ease-out both;
+}
+
+@keyframes rrSealHalo {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  30% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.55);
+  }
+}
+
+
+/* ---------------------------------------------------------
+   8. MOBILE REFINEMENTS
+   --------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .section-frame:not(.cover-frame)::before,
+  .section-frame:not(.cover-frame)::after {
+    width: 38px;
+    height: 38px;
+  }
+
+  .section-frame:not(.cover-frame)::before {
+    top: 9px;
+    left: 9px;
+  }
+
+  .section-frame:not(.cover-frame)::after {
+    right: 9px;
+    bottom: 9px;
+  }
+
+  .seal-cluster::before {
+    width: 190px;
+    height: 190px;
+  }
+
+  .envelope.is-opening .spark::before {
+    height: 12px;
+  }
+
+  .envelope.is-opening .spark::after {
+    width: 12px;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   9. ACCESSIBILITY
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope.is-opening .envelope-panel::after,
+  .envelope.is-opening .light-ray,
+  .envelope.is-opening .spark,
+  .envelope.is-opening .seal-cluster::before {
+    animation: none !important;
+  }
+}

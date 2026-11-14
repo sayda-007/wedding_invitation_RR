@@ -181,12 +181,15 @@ function App() {
   const currentIndex = sectionIds.indexOf(activeSection)
   const isLastSection = currentIndex === sectionIds.length - 1
 
-  const scrollToSection = useCallback((id: SectionId) => {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      block: 'start',
-    })
-  }, [prefersReducedMotion])
+  const scrollToSection = useCallback(
+    (id: SectionId) => {
+      document.getElementById(id)?.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+      })
+    },
+    [prefersReducedMotion],
+  )
 
   const moveToNextSection = useCallback(() => {
     if (isLastSection) {
@@ -425,7 +428,10 @@ function App() {
                   initial="hidden"
                   whileInView="visible"
                   viewport={revealViewport}
-                  transition={{ ...revealTransition, duration: motionDuration ?? 0.8 }}
+                  transition={{
+                    ...revealTransition,
+                    duration: motionDuration ?? 0.8,
+                  }}
                 >
                   بِسْمِ ٱللّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
                 </motion.p>
@@ -461,6 +467,28 @@ function App() {
                   <span className="occasion-tag">WALIMA</span>
                 </motion.div>
 
+                {/* PERSONAL INVITATION GREETING */}
+                <motion.div
+                  className="invitation-greeting"
+                  variants={revealUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={revealViewport}
+                  transition={{
+                    ...revealTransition,
+                    delay: prefersReducedMotion ? 0 : 0.22,
+                    duration: motionDuration ?? 0.8,
+                  }}
+                >
+                  <p className="invitation-greeting-english">
+                    A warm invitation to you and your family
+                  </p>
+
+                  <p className="invitation-greeting-bengali">
+                    আপনাকে এবং আপনার পরিবার-কে সাদর আমন্ত্রণ
+                  </p>
+                </motion.div>
+
                 <motion.p
                   className="welcome-message"
                   variants={revealUp}
@@ -469,7 +497,7 @@ function App() {
                   viewport={revealViewport}
                   transition={{
                     ...revealTransition,
-                    delay: prefersReducedMotion ? 0 : 0.25,
+                    delay: prefersReducedMotion ? 0 : 0.3,
                     duration: motionDuration ?? 0.8,
                   }}
                 >
