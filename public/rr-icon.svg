@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="rr-title rr-desc">
+  <title id="rr-title">Rafiqul and Rupali monogram</title>
+  <desc id="rr-desc">A refined RR monogram in burgundy and antique gold.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#3C1623" />
+      <stop offset="45%" stop-color="#2A0F18" />
+      <stop offset="100%" stop-color="#17090E" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#F5E0A7" />
+      <stop offset="35%" stop-color="#E4C987" />
+      <stop offset="70%" stop-color="#C89D4A" />
+      <stop offset="100%" stop-color="#A97732" />
+    </linearGradient>
+  </defs>
+
+  <rect width="128" height="128" rx="26" fill="url(#bg)" />
+  <rect x="10" y="10" width="108" height="108" rx="20" fill="none" stroke="url(#gold)" stroke-width="2" opacity="0.9" />
+
+  <g fill="url(#gold)" font-family="Georgia, 'Times New Roman', serif" font-weight="700" letter-spacing="-6" paint-order="stroke" stroke="rgba(255,255,255,0.25)" stroke-width="1">
+    <text x="26" y="86" font-size="68">R</text>
+    <text x="67" y="86" font-size="68">R</text>
+  </g>
+
+  <path d="M20 103H108" stroke="url(#gold)" stroke-width="2" opacity="0.7" />
+</svg>
