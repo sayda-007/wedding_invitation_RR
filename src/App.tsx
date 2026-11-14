@@ -331,6 +331,7 @@ function App() {
                     }}
                   >
                     click here
+                    <span className="click-here-bengali">(এখানে চাপুন)</span>
                   </motion.div>
                 </div>
               </motion.div>
