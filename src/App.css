@@ -1440,3 +1440,443 @@ body::before {
     scroll-behavior: auto !important;
   }
 }
+
+
+
+
+/* =========================================================
+   RR WALIMA — COVER PAGE REFINEMENT
+   Typography, spacing and royal ornament correction
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   1. COVER PAGE LAYOUT
+   --------------------------------------------------------- */
+
+.cover-section {
+  padding: clamp(2.5rem, 5vw, 4.5rem) 1rem;
+  text-align: center;
+}
+
+.cover-frame {
+  min-height: clamp(500px, 72vh, 760px);
+  padding: clamp(2rem, 4.5vw, 3.75rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* Remove the unwanted geometric overlays completely. */
+
+.cover-frame::before,
+.cover-frame::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+
+/* ---------------------------------------------------------
+   2. CLEAN, SYMMETRICAL GOLD ORNAMENT DIVIDERS
+   --------------------------------------------------------- */
+
+/* Remove the old overlapping oval decorations.
+   Replace them with two clean gold lines and a central detail. */
+
+.cover-frame .ornament {
+  position: relative;
+  display: block;
+  width: min(82%, 420px);
+  height: 28px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 1;
+
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 238, 197, 0.98) 0 2px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle at 46% 50%,
+      rgba(227, 190, 126, 0.85) 0 1px,
+      transparent 2px
+    ),
+    radial-gradient(
+      circle at 54% 50%,
+      rgba(227, 190, 126, 0.85) 0 1px,
+      transparent 2px
+    );
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  box-shadow: none;
+}
+
+/* Left half of the ornamental divider. */
+
+.cover-frame .ornament::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute;
+  inset: auto;
+  top: 50%;
+  left: 0;
+  right: auto;
+  width: calc(50% - 20px);
+  height: 1px;
+
+  border: 0;
+  border-radius: 0;
+  transform: translateY(-50%);
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(197, 151, 85, 0.45),
+    rgba(238, 211, 157, 0.85)
+  );
+
+  box-shadow: 0 0 6px rgba(214, 181, 120, 0.18);
+}
+
+/* Right half of the ornamental divider. */
+
+.cover-frame .ornament::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute;
+  inset: auto;
+  top: 50%;
+  right: 0;
+  left: auto;
+  width: calc(50% - 20px);
+  height: 1px;
+
+  border: 0;
+  border-radius: 0;
+  transform: translateY(-50%);
+
+  background: linear-gradient(
+    90deg,
+    rgba(238, 211, 157, 0.85),
+    rgba(197, 151, 85, 0.45),
+    transparent
+  );
+
+  box-shadow: 0 0 6px rgba(214, 181, 120, 0.18);
+}
+
+/* Spacing for the upper ornament. */
+
+.cover-frame .ornament-top {
+  margin-top: 0;
+  margin-bottom: 1.6rem;
+}
+
+/* Spacing for the lower ornament. */
+
+.cover-frame .ornament-bottom {
+  margin-top: 1.8rem;
+  margin-bottom: 0;
+}
+
+
+/* ---------------------------------------------------------
+   3. BISMILLAH AND ITS TRANSLATION
+   --------------------------------------------------------- */
+
+.cover-frame .bismillah {
+  display: block;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto 0.55rem;
+
+  text-align: center;
+  white-space: normal;
+
+  font-size: clamp(2.5rem, 4.2vw, 4.7rem);
+  line-height: 1.35;
+
+  color: #f3d88d;
+  font-family: 'Noto Naskh Arabic', 'Amiri', serif;
+
+  text-shadow:
+    0 0 12px rgba(234, 177, 97, 0.18),
+    0 0 24px rgba(234, 177, 97, 0.12);
+
+  animation: none;
+}
+
+.cover-frame .english-translation {
+  max-width: 680px;
+  margin: 0 auto 1.7rem;
+
+  color: rgba(244, 234, 215, 0.88);
+  font-size: clamp(0.95rem, 1.5vw, 1.12rem);
+  line-height: 1.65;
+  letter-spacing: 0.035rem;
+
+  animation: none;
+}
+
+
+/* ---------------------------------------------------------
+   4. RR MONOGRAM AND WALIMA HEADER
+   --------------------------------------------------------- */
+
+.cover-frame .welcome-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.1rem;
+
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 0.7rem;
+  padding: 0;
+
+  /* Remove the rectangular header box. */
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+
+  animation: none;
+}
+
+.cover-frame .mini-knot {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 68px;
+  height: 68px;
+
+  border-radius: 50%;
+  border: 1px solid rgba(226, 190, 126, 0.8);
+
+  color: #f3d995;
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+
+  box-shadow:
+    inset 0 0 14px rgba(214, 181, 120, 0.12),
+    0 0 20px rgba(214, 181, 120, 0.13);
+}
+
+.cover-frame .occasion-tag {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+  font-weight: 500;
+  letter-spacing: 0.35rem;
+  color: #eecf8f;
+}
+
+
+/* ---------------------------------------------------------
+   5. PERSONAL INVITATION GREETING
+   --------------------------------------------------------- */
+
+.cover-frame .invitation-greeting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: min(100%, 820px);
+  margin: 0.9rem auto 0.5rem;
+  gap: 0.35rem;
+
+  text-align: center;
+}
+
+/* Larger, prominent English invitation line. */
+
+.cover-frame .invitation-greeting-english {
+  width: 100%;
+  max-width: 780px;
+  margin: 0;
+
+  color: #f4dca7;
+  font-family: 'Cormorant Garamond', serif;
+
+  font-size: clamp(1.65rem, 3vw, 2.3rem);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.015rem;
+
+  text-shadow: 0 0 16px rgba(231, 201, 143, 0.16);
+
+  text-wrap: balance;
+}
+
+/* Smaller Bengali invitation line. */
+
+.cover-frame .invitation-greeting-bengali {
+  width: 100%;
+  margin: 0;
+
+  color: rgba(239, 211, 157, 0.94);
+  font-family: 'Noto Serif Bengali', 'Hind Siliguri', serif;
+
+  font-size: clamp(1.02rem, 1.6vw, 1.22rem);
+  font-weight: 500;
+  line-height: 1.8;
+  letter-spacing: 0;
+
+  text-wrap: balance;
+}
+
+
+/* ---------------------------------------------------------
+   6. EXISTING WELCOME MESSAGE
+   --------------------------------------------------------- */
+
+.cover-frame .welcome-message {
+  width: min(100%, 650px);
+  margin: 1.15rem auto 0;
+
+  color: rgba(244, 234, 215, 0.84);
+  font-size: clamp(1.03rem, 1.65vw, 1.25rem);
+  line-height: 1.75;
+  text-align: center;
+
+  animation: none;
+}
+
+
+/* ---------------------------------------------------------
+   7. USE FRAMER MOTION FOR THE COVER TEXT REVEALS
+   --------------------------------------------------------- */
+
+/* Prevent CSS animations from competing with Framer Motion. */
+
+.cover-frame .bismillah,
+.cover-frame .english-translation,
+.cover-frame .welcome-header,
+.cover-frame .welcome-message {
+  animation: none;
+}
+
+
+/* ---------------------------------------------------------
+   8. TABLET AND MOBILE RESPONSIVENESS
+   --------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .cover-section {
+    padding: 2.5rem 1rem 3rem;
+  }
+
+  .cover-frame {
+    min-height: 0;
+    padding: 2.3rem 1.5rem;
+  }
+
+  .cover-frame .bismillah {
+    font-size: clamp(1.8rem, 6.5vw, 2.8rem);
+    line-height: 1.4;
+  }
+
+  .cover-frame .english-translation {
+    max-width: 440px;
+    margin-bottom: 1.5rem;
+  }
+
+  .cover-frame .invitation-greeting-english {
+    font-size: clamp(1.5rem, 4.5vw, 2rem);
+  }
+
+  .cover-frame .invitation-greeting-bengali {
+    font-size: 1.12rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cover-section {
+    padding: 1.8rem 0.8rem 2.5rem;
+  }
+
+  .cover-frame {
+    padding: 2rem 1.05rem;
+    border-radius: 20px;
+  }
+
+  .cover-frame .ornament {
+    width: 88%;
+    height: 22px;
+  }
+
+  .cover-frame .ornament::before,
+  .cover-frame .ornament::after {
+    width: calc(50% - 15px);
+  }
+
+  .cover-frame .ornament-top {
+    margin-bottom: 1.35rem;
+  }
+
+  .cover-frame .ornament-bottom {
+    margin-top: 1.5rem;
+  }
+
+  .cover-frame .bismillah {
+    font-size: clamp(1.45rem, 6.8vw, 2rem);
+    line-height: 1.55;
+  }
+
+  .cover-frame .english-translation {
+    max-width: 34ch;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 1.3rem;
+  }
+
+  .cover-frame .welcome-header {
+    gap: 0.85rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .cover-frame .mini-knot {
+    width: 57px;
+    height: 57px;
+    font-size: 1.08rem;
+  }
+
+  .cover-frame .occasion-tag {
+    font-size: 0.85rem;
+    letter-spacing: 0.25rem;
+  }
+
+  .cover-frame .invitation-greeting {
+    margin-top: 0.85rem;
+    gap: 0.3rem;
+  }
+
+  .cover-frame .invitation-greeting-english {
+    font-size: clamp(1.35rem, 5.2vw, 1.65rem);
+    line-height: 1.3;
+  }
+
+  .cover-frame .invitation-greeting-bengali {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .cover-frame .welcome-message {
+    max-width: 34ch;
+    margin-top: 0.9rem;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+}
